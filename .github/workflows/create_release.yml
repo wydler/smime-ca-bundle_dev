@@ -20,6 +20,7 @@ permissions:
 
 env:
   release_name: ${{ github.event.release.tag_name }}
+  release_notes: "ReleaseNotes.md"  
   
 # set a custom name for the action view
 run-name: Create Release - ${{ github.event.release.tag_name }}
