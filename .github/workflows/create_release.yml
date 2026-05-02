@@ -1,92 +1,147 @@
+---
 # This workflow is used to create new releases.
 # It creates a ZIP and P7B bundle of the CER files and generates a proper release description.
 
-name: Create Release
+name: Tools - Create Release
 
 # Controls when the workflow will run
-on:
+"on":
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version number. (e.x.: 2024-02-04)'
-        required: true
+
+  # Trigger the action when a pre-releases or release is published.
+  release:
+    types:
+      - released
+      - prereleased
+
+permissions:
+  contents: read
+
+env:
+  release_name: ${{ github.event.release.tag_name }}
+  release_notes: "ReleaseNotes.md"
 
 # set a custom name for the action view
-run-name: Create Release - ${{ inputs.version }}        
+run-name: Create Release - ${{ github.event.release.tag_name }}
 
 jobs:
   build:
-    # The type of runner that the job will run on
+    name: Build
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
-      - name: Get repo 
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8  # v6.0.1
         with:
           fetch-depth: 0
 
-      - name: ZIP certificates
+      - name: Create ZIP archive
         run: |
-          # Create ZIP archive
+
+          # Switches to the working directory of the repository that was just checked out in the GitHub Action
           cd $GITHUB_WORKSPACE
-          zip -r NoSpamProxy_CA_Bundle-${{ inputs.version }}.zip roots intermediaries -i *.cer
+
+          # The command creates a ZIP archive containing selected certificate files from two directories
+          zip -r NoSpamProxy_CA_Bundle-${{ env.release_name }}.zip roots intermediaries -i *.cer
 
       - name: Create P7B certificate bundle
         run: |
-          # create P7B bundle
-          cd $GITHUB_WORKSPACE
-          certFiles=();for file in $(find ~+ -iname "*.cer");  do echo ${file}; certFiles+=(-certfile ${file}); done;
-          openssl crl2pkcs7 -nocrl "${certFiles[@]}" -outform DER -out NoSpamProxy_CA_Bundle-${{ inputs.version }}.p7b
 
-      - name: Get previous release tag
-        id: get-tag
+          # Switches to the working directory of the repository that was just checked out in the GitHub Action
+          cd $GITHUB_WORKSPACE
+
+          #  Declaration and initialization of variables
+          certFiles=()
+
+          # Iterates recursively over all .cer files in the current directory
+          for file in $(find ~+ -iname "*.cer"); do
+
+            # Output full path and file name
+            echo ${file}
+
+            # Adds the current certificate file to the list of certificates to be included in the bundle
+            certFiles+=(-certfile ${file})
+
+          done
+
+          # Create P7B certificate bundle
+          openssl crl2pkcs7 -nocrl "${certFiles[@]}" -outform DER -out NoSpamProxy_CA_Bundle-${{ env.release_name }}.p7b
+
+      - name: Get commit hash
+        id: get-commit-sha
         run: |
-          # get previous release tag
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | head -n 2 | tail -n 1)
-          echo "prev tag: $PREVIOUS_TAG"
-          echo "prev_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT  
+
+          # Checks if more than one Git tag exists in the repository
+          # True: Get the commit sha from previous release tag
+          # False: Get the commit sha from first commit of the repository
+          if [ "$(git tag | wc -l)" -gt "1" ]; then
+            COMMIT_SHA=$(git rev-list -n 1 $(git tag --sort=-v:refname | head -n 2 | tail -n 1))
+          else
+            COMMIT_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          # Output informations
+          echo "commit sha: $COMMIT_SHA"
+
+          # Use GITHUB_OUTPUT to make the value available to other steps within the job
+          # https://stackoverflow.com/questions/74443940/value-not-set-using-github-output
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v45
+        uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891  # v47.0.1
         with:
-          base_sha: ${{ steps.get-tag.outputs.prev_tag }}
+          base_sha: ${{ steps.get-commit-sha.outputs.commit_sha }}
           sha: ${{ github.event.workflow_run.head_branch }}
           files: |
-            **.cer  
+            **.cer
 
       - name: Create release description
         env:
           ADDED_FILES: ${{ steps.changed-files.outputs.added_files }}
           DELETED_FILES: ${{ steps.changed-files-specific.outputs.deleted_files }}
         run: |
-          # create release description
+
+          # Switches to the working directory of the repository that was just checked out in the GitHub Action
           cd $GITHUB_WORKSPACE
-          
-          echo "# Added certificates:" >> ReleaseNotes.md
+
+          #
+          echo "# Added certificates:" >> ${{ env.release_notes }}
+
+          # Checks if the variable ADDED_FILES is empty (i.e., no files have been added)
+          # True: Writes text to the release notes if no certificates have been added for this version.
+          # False: Includes each file from ADDED_FILES as an enumeration in the release notes.
           if [[ -z "${ADDED_FILES}" ]]
           then
-            echo "No certificates added in this release." >> ReleaseNotes.md
+            echo "No certificates added in this release." >> ${{ env.release_notes }}
           else
             for file in ${ADDED_FILES}; do
-              echo "- $file  " >> ReleaseNotes.md
+              echo "- $file  " >> ${{ env.release_notes }}
             done
           fi
 
-          echo "# Deleted certificates:" >> ReleaseNotes.md
-          if [[ -z "${ADDED_FILES}" ]]
+          # Checks if the variable DELETED_FILES is empty (i.e., no files have been added)
+          # True: Writes text to the release notes if no certificates have been added for this version.
+          # False: Includes each file from DELETED_FILES as an enumeration in the release notes.
+          echo "# Deleted certificates:" >> ${{ env.release_notes }}
+          if [[ -z "${DELETED_FILES}" ]]
           then
-            echo "No certificates deleted in this release." >> ReleaseNotes.md
+            echo "No certificates deleted in this release." >> ${{ env.release_notes }}
           else
             for file in ${DELETED_FILES}; do
-              echo "- $file  " >> ReleaseNotes.md
+              echo "- $file  " >> ${{ env.release_notes }}
             done
           fi
 
       - name: Create release
-        uses: ncipollo/release-action@v1.14.0
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b  # v1.20.0
         with:
-          tag: ${{ inputs.version }}
-          artifacts: "NoSpamProxy_CA_Bundle-${{ inputs.version }}.zip,NoSpamProxy_CA_Bundle-${{ inputs.version }}.p7b"
-          bodyFile: "ReleaseNotes.md"
+          name: "${{ env.release_name }}"
+          tag: "${{ env.release_name }}"
+          artifacts: "NoSpamProxy_CA_Bundle-${{ env.release_name }}.zip,NoSpamProxy_CA_Bundle-${{ env.release_name }}.p7b"
+          bodyFile: "${{ env.release_notes }}"
+          allowUpdates: "true"
