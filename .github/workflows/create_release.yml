@@ -144,3 +144,4 @@ jobs:
           tag: "${{ env.release_name }}"
           artifacts: "NoSpamProxy_CA_Bundle-${{ env.release_name }}.zip,NoSpamProxy_CA_Bundle-${{ env.release_name }}.p7b"
           bodyFile: "${{ env.release_notes }}"
+          allowUpdates: "true"
