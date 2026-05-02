@@ -67,6 +67,7 @@ jobs:
 
           done
 
+          # Create P7B certificate bundle
           openssl crl2pkcs7 -nocrl "${certFiles[@]}" -outform DER -out NoSpamProxy_CA_Bundle-${{ inputs.version }}.p7b
 
       - name: Get previous release tag
