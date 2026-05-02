@@ -45,7 +45,7 @@ jobs:
           cd $GITHUB_WORKSPACE
 
           # The command creates a ZIP archive containing selected certificate files from two directories
-          zip -r NoSpamProxy_CA_Bundle-${{ inputs.version }}.zip roots intermediaries -i *.cer
+          zip -r NoSpamProxy_CA_Bundle-${{ env.release_name }}.zip roots intermediaries -i *.cer
 
       - name: Create P7B certificate bundle
         run: |
