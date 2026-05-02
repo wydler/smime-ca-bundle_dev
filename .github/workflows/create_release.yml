@@ -127,13 +127,13 @@ jobs:
           # Checks if the variable DELETED_FILES is empty (i.e., no files have been added)
           # True: Writes text to the release notes if no certificates have been added for this version.
           # False: Includes each file from DELETED_FILES as an enumeration in the release notes.
-          echo "# Deleted certificates:" >> ReleaseNotes.md
-          if [[ -z "${ADDED_FILES}" ]]
+          echo "# Deleted certificates:" >> ${{ env.release_notes }}
+          if [[ -z "${DELETED_FILES}" ]]
           then
-            echo "No certificates deleted in this release." >> ReleaseNotes.md
+            echo "No certificates deleted in this release." >> ${{ env.release_notes }}
           else
             for file in ${DELETED_FILES}; do
-              echo "- $file  " >> ReleaseNotes.md
+              echo "- $file  " >> ${{ env.release_notes }}
             done
           fi
 
