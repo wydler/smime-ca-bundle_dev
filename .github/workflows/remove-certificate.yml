@@ -203,7 +203,12 @@ jobs:
       - job1
       - job2
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    if: always() && needs.job1.outputs.ExpiredCertfound == 'false' || needs.job2.outputs.PR_NR == ''
+    if: >
+      always() &&
+      (
+        needs.job1.outputs.ExpiredCertfound == 'false' ||
+        needs.job2.outputs.PR_NR == ''
+      )
     # && needs.job2.result == 'skipped'
     # || needs.job2.outputs.PR_NR == ''
     runs-on: ubuntu-slim
