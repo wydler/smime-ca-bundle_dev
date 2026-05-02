@@ -37,6 +37,8 @@ jobs:
 
       - name: Create ZIP archive
         run: |
+        
+          # Switches to the working directory of the repository that was just checked out in the GitHub Action
           cd $GITHUB_WORKSPACE
           zip -r NoSpamProxy_CA_Bundle-${{ inputs.version }}.zip roots intermediaries -i *.cer
 
