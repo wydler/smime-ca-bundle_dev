@@ -17,7 +17,10 @@ name: Tools - Create Release
 
 permissions:
   contents: read
-        
+
+env:
+  release_name: ${{ github.event.release.tag_name }}
+  
 # set a custom name for the action view
 run-name: Create Release - ${{ github.event.release.tag_name }}
 
