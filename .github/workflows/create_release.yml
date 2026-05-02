@@ -14,7 +14,10 @@ name: Tools - Create Release
     types:
       - released
       - prereleased
-      
+
+permissions:
+  contents: read
+        
 # set a custom name for the action view
 run-name: Create Release - ${{ inputs.version }}        
 
