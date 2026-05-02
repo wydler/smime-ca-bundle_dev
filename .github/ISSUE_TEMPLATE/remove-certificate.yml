@@ -1,3 +1,4 @@
+---
 name: Remove certificate
 description: Request to remove a certificate
 labels: ["invalid"]
