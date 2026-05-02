@@ -109,7 +109,9 @@ jobs:
           # Switches to the working directory of the repository that was just checked out in the GitHub Action        
           cd $GITHUB_WORKSPACE
           
-          echo "# Added certificates:" >> ReleaseNotes.md
+          # 
+          echo "# Added certificates:" >> ${{ env.release_notes }}
+          
           if [[ -z "${ADDED_FILES}" ]]
           then
             echo "No certificates added in this release." >> ReleaseNotes.md
