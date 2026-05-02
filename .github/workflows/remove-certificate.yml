@@ -72,7 +72,7 @@ jobs:
               catch {
                 Write-Host "Skipping invalid cert: $strFile"
                 continue
-              }                
+              }
 
               # Create variables with given values
               [datetime] $dtCurrentTimestamp = Get-Date
