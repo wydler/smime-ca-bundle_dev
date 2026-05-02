@@ -60,7 +60,7 @@ jobs:
 
           # Retrieving files in all directories that have the file types cer, der, and pem
           # The column named Fullname is passed to the loop.
-          Get-ChildItem -Include ('*.cer', '*.der', '*.pem') -Recurse | Select -ExpandProperty Fullname | ForEach-Object {
+          Get-ChildItem -Path . -Include ('*.cer', '*.der', '*.pem') -Recurse | Select -ExpandProperty Fullname | ForEach-Object {
 
               #  Declaration and initialization of variables for the loop
               [string] $strFile = $_
