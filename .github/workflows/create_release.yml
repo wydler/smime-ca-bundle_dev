@@ -103,7 +103,7 @@ jobs:
       - name: Create release description
         env:
           ADDED_FILES: ${{ steps.changed-files.outputs.added_files }}
-          DELETED_FILES: ${{ steps.changed-files-specific.outputs.deleted_files }}
+          DELETED_FILES: ${{ steps.changed-files.outputs.deleted_files }}
         run: |
 
           # Switches to the working directory of the repository that was just checked out in the GitHub Action
