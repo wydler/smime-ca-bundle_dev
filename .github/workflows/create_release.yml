@@ -142,4 +142,4 @@ jobs:
         with:
           tag: "${{ env.release_name }}"
           artifacts: "NoSpamProxy_CA_Bundle-${{ inputs.version }}.zip,NoSpamProxy_CA_Bundle-${{ inputs.version }}.p7b"
-          bodyFile: "ReleaseNotes.md"
+          bodyFile: "${{ env.release_notes }}"
