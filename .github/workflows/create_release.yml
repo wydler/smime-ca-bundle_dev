@@ -1,3 +1,4 @@
+---
 # This workflow is used to create new releases.
 # It creates a ZIP and P7B bundle of the CER files and generates a proper release description.
 
