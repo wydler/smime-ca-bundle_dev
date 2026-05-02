@@ -107,7 +107,7 @@ jobs:
 
                   # Update remote refs along with associated objects
                   # https://git-scm.com/docs/git-push
-                  git push
+                  git push --set-upstream origin HEAD
 
                   # Wert der Variable von 'False' auf 'True' setzen
                   $bExpiredCertfound = $true
