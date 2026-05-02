@@ -140,6 +140,6 @@ jobs:
       - name: Create release
         uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b  # v1.20.0
         with:
-          tag: ${{ inputs.version }}
+          tag: "${{ env.release_name }}"
           artifacts: "NoSpamProxy_CA_Bundle-${{ inputs.version }}.zip,NoSpamProxy_CA_Bundle-${{ inputs.version }}.p7b"
           bodyFile: "ReleaseNotes.md"
