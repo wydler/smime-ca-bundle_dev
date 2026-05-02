@@ -35,9 +35,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: ZIP certificates
+      - name: Create ZIP archive
         run: |
-          # Create ZIP archive
           cd $GITHUB_WORKSPACE
           zip -r NoSpamProxy_CA_Bundle-${{ inputs.version }}.zip roots intermediaries -i *.cer
 
