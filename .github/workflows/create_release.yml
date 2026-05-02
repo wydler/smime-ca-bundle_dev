@@ -111,7 +111,10 @@ jobs:
           
           # 
           echo "# Added certificates:" >> ${{ env.release_notes }}
-          
+
+          # Checks if the variable ADDED_FILES is empty (i.e., no files have been added)
+          # True: Writes text to the release notes if no certificates have been added for this version.
+          # False: Includes each file from ADDED_FILES as an enumeration in the release notes.
           if [[ -z "${ADDED_FILES}" ]]
           then
             echo "No certificates added in this release." >> ReleaseNotes.md
