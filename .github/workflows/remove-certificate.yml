@@ -66,7 +66,13 @@ jobs:
               [string] $strFile = $_
 
               #
-              $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2([string] $strFile)
+              try {
+                $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2([string] $strFile)
+              }
+              catch {
+                Write-Host "Skipping invalid cert: $strFile"
+                continue
+              }                
 
               # Create variables with given values
               [datetime] $dtCurrentTimestamp = Get-Date
