@@ -60,13 +60,19 @@ jobs:
 
           # Retrieving files in all directories that have the file types cer, der, and pem
           # The column named Fullname is passed to the loop.
-          Get-ChildItem -Include ('*.cer', '*.der', '*.pem') -Recurse | Select -ExpandProperty Fullname | ForEach-Object {
+          Get-ChildItem -Path . -Include ('*.cer', '*.der', '*.pem') -Recurse | Select -ExpandProperty Fullname | ForEach-Object {
 
               #  Declaration and initialization of variables for the loop
               [string] $strFile = $_
 
               #
-              $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2([string] $strFile)
+              try {
+                $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2([string] $strFile)
+              }
+              catch {
+                Write-Host "Skipping invalid cert: $strFile"
+                continue
+              }
 
               # Create variables with given values
               [datetime] $dtCurrentTimestamp = Get-Date
@@ -107,7 +113,7 @@ jobs:
 
                   # Update remote refs along with associated objects
                   # https://git-scm.com/docs/git-push
-                  git push
+                  git push --set-upstream origin HEAD
 
                   # Wert der Variable von 'False' auf 'True' setzen
                   $bExpiredCertfound = $true
@@ -197,7 +203,12 @@ jobs:
       - job1
       - job2
     # https://stackoverflow.com/questions/69354003/github-action-job-fire-when-previous-job-skipped
-    if: always() && needs.job1.outputs.ExpiredCertfound == 'false' || needs.job2.outputs.PR_NR == ''
+    if: >
+      always() &&
+      (
+        needs.job1.outputs.ExpiredCertfound == 'false' ||
+        needs.job2.outputs.PR_NR == ''
+      )
     # && needs.job2.result == 'skipped'
     # || needs.job2.outputs.PR_NR == ''
     runs-on: ubuntu-slim
