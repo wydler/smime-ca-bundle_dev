@@ -70,22 +70,34 @@ jobs:
           # Create P7B certificate bundle
           openssl crl2pkcs7 -nocrl "${certFiles[@]}" -outform DER -out NoSpamProxy_CA_Bundle-${{ env.release_name }}.p7b
 
-      - name: Get previous release tag
-        id: get-tag
+      - name: Get commit hash
+        id: get-commit-sha
         run: |
-          # get previous release tag
-          PREVIOUS_TAG=$(git tag --sort=-v:refname | head -n 2 | tail -n 1)
-          echo "prev tag: $PREVIOUS_TAG"
-          echo "prev_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT  
+
+          # Checks if more than one Git tag exists in the repository
+          # True: Get the commit sha from previous release tag
+          # False: Get the commit sha from first commit of the repository
+          if [ "$(git tag | wc -l)" -gt "1" ]; then
+            COMMIT_SHA=$(git rev-list -n 1 $(git tag --sort=-v:refname | head -n 2 | tail -n 1))
+          else
+            COMMIT_SHA=$(git rev-list --max-parents=0 HEAD)
+          fi
+
+          # Output informations
+          echo "commit sha: $COMMIT_SHA"
+
+          # Use GITHUB_OUTPUT to make the value available to other steps within the job
+          # https://stackoverflow.com/questions/74443940/value-not-set-using-github-output
+          echo "commit_sha=$COMMIT_SHA" >> $GITHUB_OUTPUT
 
       - name: Get changed files
         id: changed-files
         uses: tj-actions/changed-files@e0021407031f5be11a464abee9a0776171c79891 # v47.0.1
         with:
-          base_sha: ${{ steps.get-tag.outputs.prev_tag }}
+          base_sha: ${{ steps.get-commit-sha.outputs.commit_sha }}
           sha: ${{ github.event.workflow_run.head_branch }}
           files: |
-            **.cer  
+            **.cer
 
       - name: Create release description
         env:
