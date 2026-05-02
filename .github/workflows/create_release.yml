@@ -117,10 +117,10 @@ jobs:
           # False: Includes each file from ADDED_FILES as an enumeration in the release notes.
           if [[ -z "${ADDED_FILES}" ]]
           then
-            echo "No certificates added in this release." >> ReleaseNotes.md
+            echo "No certificates added in this release." >> ${{ env.release_notes }}
           else
             for file in ${ADDED_FILES}; do
-              echo "- $file  " >> ReleaseNotes.md
+              echo "- $file  " >> ${{ env.release_notes }}
             done
           fi
 
