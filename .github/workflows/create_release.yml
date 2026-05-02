@@ -53,7 +53,20 @@ jobs:
           # Switches to the working directory of the repository that was just checked out in the GitHub Action
           cd $GITHUB_WORKSPACE
 
-          certFiles=();for file in $(find ~+ -iname "*.cer");  do echo ${file}; certFiles+=(-certfile ${file}); done;
+          #  Declaration and initialization of variables
+          certFiles=()
+
+          # Iterates recursively over all .cer files in the current directory
+          for file in $(find ~+ -iname "*.cer"); do
+
+            # Output full path and file name
+            echo ${file}
+
+            # Adds the current certificate file to the list of certificates to be included in the bundle
+            certFiles+=(-certfile ${file})
+
+          done
+
           openssl crl2pkcs7 -nocrl "${certFiles[@]}" -outform DER -out NoSpamProxy_CA_Bundle-${{ inputs.version }}.p7b
 
       - name: Get previous release tag
