@@ -209,10 +209,10 @@ jobs:
       J3_BRANCH_SOURCE_NAME: "${{ needs.job1.outputs.BranchName }}"
       
     steps:
-      - name: Write ExpiredCertfound
+      - name: Display ExpiredCertfound
         run: echo "${{ needs.job1.outputs.ExpiredCertfound }}"
 
-      - name: Write BranchName
+      - name: Display BranchName
         run: echo "${{ env.J3_BRANCH_SOURCE_NAME }}"
 
       - name: Delete branch
