@@ -124,6 +124,9 @@ jobs:
             done
           fi
 
+          # Checks if the variable DELETED_FILES is empty (i.e., no files have been added)
+          # True: Writes text to the release notes if no certificates have been added for this version.
+          # False: Includes each file from DELETED_FILES as an enumeration in the release notes.
           echo "# Deleted certificates:" >> ReleaseNotes.md
           if [[ -z "${ADDED_FILES}" ]]
           then
