@@ -110,7 +110,7 @@ jobs:
           cd $GITHUB_WORKSPACE
 
           #
-          echo "# Added certificates:" >> ${{ env.release_notes }}
+          echo "# Added certificates" >> ${{ env.release_notes }}
 
           # Checks if the variable ADDED_FILES is empty (i.e., no files have been added)
           # True: Writes text to the release notes if no certificates have been added for this version.
@@ -119,22 +119,55 @@ jobs:
           then
             echo "No certificates added in this release." >> ${{ env.release_notes }}
           else
+
+            # Append certificate section to release notes
+          cat <<EOF >> ${{ env.release_notes }}
+          <details>
+          <summary>Below is an overview:</summary>
+
+          EOF
+
+            # Add generated file list to release notes section
             for file in ${ADDED_FILES}; do
               echo "- $file  " >> ${{ env.release_notes }}
             done
+
+            # Append certificate section to release notes
+          cat <<EOF >> ${{ env.release_notes }}
+          </details>
+
+          EOF
+
           fi
+
+          #
+          echo "# Deleted certificates" >> ${{ env.release_notes }}
 
           # Checks if the variable DELETED_FILES is empty (i.e., no files have been added)
           # True: Writes text to the release notes if no certificates have been added for this version.
           # False: Includes each file from DELETED_FILES as an enumeration in the release notes.
-          echo "# Deleted certificates:" >> ${{ env.release_notes }}
           if [[ -z "${DELETED_FILES}" ]]
           then
             echo "No certificates deleted in this release." >> ${{ env.release_notes }}
           else
+
+            # Append certificate section to release notes
+          cat <<EOF >> ${{ env.release_notes }}
+          <details>
+          <summary>Below is an overview:</summary>
+
+          EOF
+
+            # Add generated file list to release notes section
             for file in ${DELETED_FILES}; do
               echo "- $file  " >> ${{ env.release_notes }}
             done
+
+            # Append certificate section to release notes
+          cat <<EOF >> ${{ env.release_notes }}
+          </details>
+          EOF
+
           fi
 
       - name: Create release
