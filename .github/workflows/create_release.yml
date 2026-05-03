@@ -166,10 +166,8 @@ jobs:
             # Append certificate section to release notes
           cat <<EOF >> ${{ env.release_notes }}
           </details>
-
           EOF
 
-            
           fi
 
       - name: Create release
