@@ -127,6 +127,7 @@ jobs:
 
           EOF
 
+            # Add generated file list to release notes section
             for file in ${ADDED_FILES}; do
               echo "- $file  " >> ${{ env.release_notes }}
             done
@@ -157,6 +158,7 @@ jobs:
 
           EOF
 
+            # Add generated file list to release notes section
             for file in ${DELETED_FILES}; do
               echo "- $file  " >> ${{ env.release_notes }}
             done
