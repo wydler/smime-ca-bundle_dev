@@ -182,7 +182,7 @@ jobs:
 
       - name: Create pull request
         id: pullrequest
-        uses: devops-infra/action-pull-request@b2895bff2ff66579f6704d717a1ea75fad919e84  # v1.0.2
+        uses: devops-infra/action-pull-request@aa7651a994452de96d97c764dd4976cf88be8778  # v1.3.0
         with:
           github_token: "${{ secrets.NSP_GH_TOKEN }}"
           source_branch: "${{ env.J2_BRANCH_SOURCE_NAME }}"
