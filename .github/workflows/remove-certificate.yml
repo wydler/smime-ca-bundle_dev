@@ -46,7 +46,7 @@ jobs:
           branch: "${{ steps.vars.outputs.branchname }}"
 
       - name: Checkout Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           ref: "${{ steps.vars.outputs.branchname }}"
 
@@ -175,7 +175,7 @@ jobs:
         run: echo "${{ env.J2_BRANCH_SOURCE_NAME }}"
 
       - name: Checkout Repository
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
         with:
           ref: ${{ env.J2_BRANCH_SOURCE_NAME }}
           fetch-depth: '0'
